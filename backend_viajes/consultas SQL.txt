@@ -1,0 +1,45 @@
+a.
+SELECT count(cli.documento) as clientes
+FROM clientes as cli
+INNER JOIN consultas as consul
+INNER JOIN viajes as via
+ON consul.FK_documento_cliente = cli.documento
+AND consul.FK_id_viaje = via.id
+WHERE via.valor > 5000000;
+
+b.
+SELECT cli.documento, cli.nombre, cli.apellido  as cliente
+FROM clientes as cli
+INNER JOIN consultas as consul
+INNER JOIN viajes as via
+INNER JOIN reservas as reser
+INNER JOIN pagos as pag
+ON consul.FK_documento_cliente = cli.documento
+AND consul.FK_id_viaje = via.id
+AND consul.FK_id_reserva = reser.id
+AND reser.FK_id_pago = pag.id
+WHERE pag.tipo_pago = "efectivo";
+
+c.
+SELECT cli.documento, cli.nombre, cli.apellido  as cliente
+FROM clientes as cli
+WHERE cli.edad > 40 AND cli.ciudad_residencia = "Bogota";
+
+d.
+SELECT * as viajes
+FROM viajes as via
+INNER JOIN consultas as consul
+INNER JOIN reservas as reser
+INNER JOIN pagos as pag
+AND consul.FK_id_viaje = via.id
+AND consul.FK_id_reserva = reser.id
+AND reser.FK_id_pago = pag.id
+WHERE pag.tipo_pago = "tarjeta_credito" AND via.tipo_viaje = "turistico" AND via.tipo_viaje = "negocios";
+
+e.
+SELECT * as viajes
+FROM viajes as via
+INNER JOIN consultas as consul
+INNER JOIN reservas as reser
+ON consul.FK_id_reserva = reser.id
+WHERE reser.estado = "activo" AND reser.estado = "cancelado";

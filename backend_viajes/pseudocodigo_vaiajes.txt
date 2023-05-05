@@ -1,0 +1,103 @@
+Funcion mostrar_viajes:
+	Escribir "Nuestros viajes son: "
+	Para i = 0 Hasta viajes
+		Escribir viaje[i]
+	Fin Para
+Fin Funcion
+Funcion mostrar_viajes_preferencias(preferencias[]):
+	Escribir "Nuestros viajess segun sus gustos son: "
+	Para i = 0 Hasta viajes
+		Si caracteristica_viaje == preferencias[i] Entonces
+			Escribir viajes[i]
+		Fin Si
+	Fin Para
+Fin Funcion
+Funcion pedir_datos (respuesta_reserva)
+	Si respuesta_reserva == "si" Entonces
+		Escribir "Ingrese tipo de documento"
+		Leer tipo_documento
+		Escribir "Ingrese documento"
+		Leer documento
+		Escribir "Ingrese nombre"
+		Leer nombre
+		Escribir "Ingrese apellido"
+		Leer apellido
+		Escribir "Ingrese telefono"
+		Leer telefono
+		Escribir "Ingrese email"
+		Leer email
+		Escribir "Ingrese edad"
+		Leer edad
+		Escribir "Ingrese ciudad de residencia"
+		Leer ciudad_residencia
+	Fin Si
+	datos_cliente = [tipo_documento, documento, nombre, apellido, telefono, email, edad, ciudad_residencia]
+	llamar funcion -> Reserva(datos_cliente)
+Fin Funcion
+Funcion Reserva (datos_cliente)
+	Escribir "Ingrese el destino de su viaje"
+	Leer destino
+	Escribir "Ingrese la fecha en la que desea viajar"
+	Leer fecha
+	Definir origen = datos_cliente[7]
+	Definir estado = "pendiente"
+	Definir pago = 1.000.000
+	reserva = [origen, destino, fecha, estado, pago]
+	llamar funcion -> realizar_reserva(reserva)
+Fin Funcion
+Funcion pago (reserva)
+	Escribir "¿Por cuál medio desea efectuar el pago?"
+	Leer tipo_pago
+	Si tipo_pago == "tarjeta_credito" Entonces
+		Escribir "Ingrese su numero de cuenta"
+		Leer numero_cuenta
+		Definir valor_actual_tarjeta = valor_actual_tarjeta - reserva[4]
+		reserva[3] = "activo"
+	Si No
+		Escribir "Recuerda ir a nuestras oficinas para activar tu reserva"
+	Fin Si
+Fin Funcion
+Funcion realizar_reserva (reserva)
+	Escribir "¿Qué desea hacer con su reserva?"
+	Escribir " 1. Pagar"
+	Escribir " 2. Cancelar"
+	Leer opcion_reserva
+	
+	Si opcion_reserva == 1 Entonces
+		llamar funcion -> pago(reserva)
+	Si No 
+		reserva[3] = "cancelado"
+	Fin Si
+Fin Funcion
+Funcion preferencias_clientes
+	Escribir "Queremos conocer sus preferencias. Por lo que le haremos las siguientes preguntas"
+	Escribir "¿Cuál es su clima preferido? \n 1. Calor \n 2. Frio \n 3. Templado"
+	Leer preferencia_clima
+	Escribir "¿Le gustan los ambientes tranquilos o ruidosos? \n 1. Tranquilos \n 2. Ruidosos"
+	Leer preferencia_ambiente
+	Escribir "¿Le gusta la historia o prefiere ir de fiesta? \n 1. Historia \n 2. Fiesta"
+	Leer preferencia_gustos
+	Escribir "¿Cuál es su motivo de viaje?"
+	Leer preferencia_descripcion
+	
+	preferencias = [preferencia_clima, preferencia_ambiente, preferencia_gustos, preferencia_descripcion]
+Fin Funcion 	
+Inicio 
+	Escribir "Bienvenido"
+
+	llamar funcion -> mostrar_viajes	
+
+	llamar funcion -> preferencias_clientes
+
+	llamar funcion -> mostrar_viajes_preferencias(preferencias)
+
+	Escribir "¿Desea hacer alguna reserva?
+	Leer respuesta_reserva
+	
+	Si respuesta_reserva == "no" Entonces
+		llamar funcion -> mostrar viajes
+	Si No 
+		llamar funcion -> pedir_datos(respuesta_reserva)
+	Fin Si
+	
+Fin
