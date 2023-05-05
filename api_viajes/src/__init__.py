@@ -1,7 +1,7 @@
 from flask import Flask
 from os import environ
 from src.database import db, ma
-from src.endpoints.users import users
+from src.endpoints.clients import clients
 
 def create_app():
     app = Flask(__name__,instance_relative_config=True)
@@ -20,9 +20,13 @@ def create_app():
 
     app.config.from_object(config_class)
 
-    app.register_blueprint(users)
+    app.register_blueprint(clients)
 
     db.init_app(app)
     ma.init_app(app)
+
+    with app.app_context():
+      #db.drop_all()
+      db.create_all()
 
     return app

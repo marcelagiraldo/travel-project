@@ -1,25 +1,25 @@
 from flask import Blueprint, request
 from http import HTTPStatus
+import sqlalchemy.exc
 import werkzeug
 from src.database import db
-from src.models.user import User, user_schema, users_schema
+from src.models.viaje import Viaje,viaje_schema,viajes_schema
 
-users = Blueprint("users",__name__,url_prefix="/api/v1/users")
+viajes = Blueprint("viajes",__name__,url_prefix="/api/v1")
 
-@users.get("/")
+@viajes.get("/viajes")
 def read_all():
-    users = User.query.order_by(User.name).all()
+    viajes = Viaje.query.order_by(Viaje.id).all()
+    return {"data": viajes_schema.dump(viajes)}, HTTPStatus.OK
 
-    return {"data": users_schema.dump(users)}, HTTPStatus.OK
-
-@users.get("/<int:id>")
+@viajes.get("/viajes/<int:id>")
 def read_one(id):
-    user = User.query.filter_by(id=id).first()
-    if(not user):
-        return {"error": "Resource not found"}, HTTPStatus.NOT_FOUND
-    return {"data": user_schema.dump(user)}, HTTPStatus.OK
+    viaje = Viaje.query.filter_by(id=id).first()
+    if(not Viaje):
+       return {"error": "Resource not found"}, HTTPStatus.NOT_FOUND
+    return {"data": viaje_schema.dump(viaje)},HTTPStatus.OK
 
-@users.post("/")
+@viajes.post("/viajes")
 def create():
     post_data = None
 
@@ -28,46 +28,50 @@ def create():
     except werkzeug.exceptions.BadRequest as e:
         return {"error": "Post body JSON data not found","message": str(e)}, HTTPStatus.BAD_REQUEST
 
-    user = User(id = request.get_json().get("id", None),
-    name = request.get_json().get("name", None),
-    email = request.get_json().get("email", None),
-    password = request.get_json().get("password", None))
+    Viaje = Viaje(id = request.get_json().get("id", None),
+        documento=documento,
+        id_viaje=id_viaje)
     try:
-        db.session.add(user)
+        db.session.add(Viaje)
         db.session.commit()
     except sqlalchemy.exc.IntegrityError as e:
         return {"error": "Invalid resource values","message": str(e)}, HTTPStatus.BAD_REQUEST
 
-    return {"data": user_schema.dump(user)}, HTTPStatus.CREATED
+    return {"data": Viaje_schema.dump(Viaje)}, HTTPStatus.CREATED
 
-@users.put('/<int:id>')
-def update(id):
+@viajes.put('/clientes/<int:documento>/viajes/<int:id_viaje>/viajes/<int:id>')
+def update(id,documento,id_viaje):
     post_data = None
 
     try:
         post_data = request.get_json()
     except werkzeug.exceptions.BadRequest as e:
         return {"error": "Put body JSON data not found","message": str(e)}, HTTPStatus.BAD_REQUEST
-    user = User.query.filter_by(id=id).first()
-    if(not user):
+
+    consulta = Consulta.query.filter_by(id=id).first()
+    if(not consulta):
         return {"error": "Resource not found"}, HTTPStatus.NOT_FOUND
-    user.name = request.get_json().get('name', user.name)
-    user.email = request.get_json().get('email', user.email)
-    user.password = request.get_json().get('password', user.password)
+
+    if (documento != consulta.documento_cliente):
+        consulta.documento_cliente = documento
+
+    if (id_viaje != consulta.id_viaje):
+        consulta.id_viaje = id_viaje
+
     try:
         db.session.commit()
     except sqlalchemy.exc.IntegrityError as e:
         return {"error": "Invalid resource values","message": str(e)}, HTTPStatus.BAD_REQUEST
 
-    return {"data": user_schema.dump(user)}, HTTPStatus.OK
+    return {"data": consulta_schema.dump(consulta)}, HTTPStatus.OK
 
-@users.delete("/<int:id>")
+@viajes.delete("/clientes/<int:id>")
 def delete(id):
-    user = User.query.filter_by(id=id).first()
-    if(not user):
+    consulta = Consulta.query.filter_by(id=id).first()
+    if(not consulta):
         return {"error": "Resource not found"}, HTTPStatus.NOT_FOUND
     try:
-        db.session.delete(user)
+        db.session.delete(consulta)
         db.session.commit()
     except sqlalchemy.exc.IntegrityError as e:
         return {"error": "Resource could not be deleted","message": str(e)}, HTTPStatus.BAD_REQUEST
